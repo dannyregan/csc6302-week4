@@ -18,9 +18,18 @@ def main():
 
   if connection:
     print(res)
+
     input("Press enter to view the Total Revenue by Vessel: ")
     view = Vessel_DAL.totalRevenueByVessel(connection)
     printChart(view)
+
+    input("Press enter to view the ID for Sea Breeze: ")
+    vesselId = Vessel_DAL.getVesselID(connection, "Sea Breeze")
+    print(vesselId)
+    input("Press enter to view the ID for Does Not Exist: ")
+    vesselId = Vessel_DAL.getVesselID(connection, "Does Not Exist")
+    print(vesselId)
+
   else: print(res)
 
 

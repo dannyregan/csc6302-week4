@@ -40,8 +40,11 @@ class Vessel_DAL:
   
   def getVesselID(connection, vesselName):
     cursor = connection.cursor()
-    func = f"getVesselID({vesselName});"
-    cursor.execute(func)
-    result = cursor.fetchall()
+    query = f"SELECT getVesselID('{vesselName}');"
+    cursor.execute(query)
+    result = cursor.fetchone()
     cursor.close()
-    return result
+    if result and result[0] != -1:
+      return result[0]
+    else: 
+      return "Vessel not found."
