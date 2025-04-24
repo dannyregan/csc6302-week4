@@ -11,9 +11,9 @@ This is a Python-based terminal app that manages the Merrimack River Cruise MySQ
 
 ## Project Structure
 
-- MRC
-    - DAL.py
+- ReganMRCapplication
     - BLL.py
+    - DAL.py
     - README.md
 
 ## Install Dependencies
@@ -33,3 +33,7 @@ python3 BLL.py
 The terminal interface will prompt you to enter the root password for the MRC database to establish a connection.
 
 You will only need to press ENTER or RETURN to run the program—no other commands are required.
+
+## Author
+
+This project was created by Danny Regan as part of Professor Amanda Menier's Database Principles course at Merrimack College.
