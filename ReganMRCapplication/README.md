@@ -1,6 +1,6 @@
 # CSC6302 Week 4 Project
 
-This is a Python-based terminal app that manages the Merrimack River Cruise MySQL database.
+This is a Python-based terminal app that manages the Merrimack River Cruise (MRC) MySQL database. It provides funtionality for interacting with the database.
 
 ## Technologies Used
 
@@ -18,14 +18,16 @@ This is a Python-based terminal app that manages the Merrimack River Cruise MySQ
 
 ## Install Dependencies
 
-on Mac:
+On macOS:
+
 ```bash
 pip3 install mysql-connector-python tabulate
 ```
 
 ## Running the Application
 
-Start the application on Mac by running:
+ On macOS, start the application by opening the terminal, navigating to the project directory, and running the following command:
+
 ```bash
 python3 BLL.py
 ```
