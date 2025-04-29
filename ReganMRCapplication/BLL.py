@@ -11,6 +11,16 @@ def printAllTrips(data):
   headers = ["Date and Time", "Length of Trip", "Vessel", "Passenger", "Address", "Phone", "Total Passengers", "Cost"]
   print(tabulate.tabulate(data, headers=headers, tablefmt="fancy_grid"))
 
+def connectToDB(username, pswd, host_value, port_value):
+  db = DBConnection(pswd)
+  connection, res = db.connect()
+  if connection:
+    print(res)
+    return True
+  else:
+    print("No connection")
+    return False
+
 def main():
   # Password required to access the database
   pswd = getpass.getpass("Enter the password for the database 'mrc': ")
