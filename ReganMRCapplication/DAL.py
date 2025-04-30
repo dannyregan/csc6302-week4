@@ -47,6 +47,24 @@ class Vessel_DAL:
       return result[0]
     else: 
       return "Vessel not found."
+    
+  def addVessel(connection, name, cph):
+    cursor = connection.cursor()
+    try:
+      cursor.execute("SELECT getVesselID(%s)", (name,))
+      result = cursor.fetchone()
+
+      if result and result[0] == -1:
+        args = (name, cph)
+        cursor.callproc("addVessel", args)
+        connection.commit()
+        return 'Vessel added successfully.'
+      else:
+        return 'Vessel already exists.'
+    except:
+      return 'Vessel was unable to be added.'
+    finally:
+      cursor.close()
   
 class Trip_DAL:
   def addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
@@ -65,7 +83,6 @@ class Trip_DAL:
 
       connection.commit()
       return "Trip added successfully."
-    
     finally:
       cursor.close()
   
@@ -81,11 +98,18 @@ class Passenger_DAL:
   def addPassenger(connection, passengerName, address, phone):
     cursor = connection.cursor()
     try:
-      args = (passengerName, address, phone)
-      cursor.callproc("addPassenger", args)
-      connection.commit()
-      return "Passenger is now in the database."
-    
+      cursor.execute("SELECT getPassengerID(%s)", (passengerName,))
+      result = cursor.fetchone()
+
+      if result and result[0] == -1:
+        args = (passengerName, address, phone)
+        cursor.callproc("addPassenger", args)
+        connection.commit()
+        return 'Passenger added successfully.'
+      else:
+        return 'Passenger already exists.'
+    except:
+      return 'Passenger was unable to be added.'
     finally:
       cursor.close()
   
@@ -97,5 +121,13 @@ class Passenger_DAL:
     cursor.close()
     if result and result[0] != -1:
       return result[0]
-    else: 
-      return "Passenger not found."
+    else:
+      return False
+    
+  def allPassengers(connection):
+    cursor = connection.cursor()
+    query = "SELECT name FROM passengers;"
+    cursor.execute(query)
+    result = cursor.fetchall()
+    cursor.close()
+    return result

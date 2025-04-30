@@ -3,31 +3,46 @@ import tabulate
 
 from DAL import DBConnection, Vessel_DAL, Trip_DAL, Passenger_DAL
 
-def printTotalRevenueByVessel(data):
+def printTotalRevenueByVessel(connection):
+  data = Vessel_DAL.totalRevenueByVessel(connection)
   headers = ["Vessel", "Total Revenue"]
-  print(tabulate.tabulate(data, headers=headers, tablefmt="fancy_grid"))
+  return tabulate.tabulate(data, headers=headers, tablefmt="fancy_grid")
 
-def printAllTrips(data):
+def printAllTrips(connection):
+  data = Trip_DAL.allTrips(connection)
   headers = ["Date and Time", "Length of Trip", "Vessel", "Passenger", "Address", "Phone", "Total Passengers", "Cost"]
-  print(tabulate.tabulate(data, headers=headers, tablefmt="fancy_grid"))
+  return tabulate.tabulate(data, headers=headers, tablefmt="fancy_grid")
+
+def printAllPassengers(connection):
+  data = Passenger_DAL.allPassengers(connection)
+  headers = ["Name"]
+  return tabulate.tabulate(data, headers=headers, tablefmt="fancy_grid")
+
+def addPassenger(connection, name, address, phone):
+  res = Passenger_DAL.addPassenger(connection, name, address, phone)
+  return res
+
+def addVessel(connection, name, cph):
+  res = Vessel_DAL.addVessel(connection, name, cph)
+  return res
 
 def connectToDB(username, pswd, host_value, port_value):
   db = DBConnection(pswd)
   connection, res = db.connect()
   if connection:
     print(res)
-    return True
+    return connection
   else:
     print("No connection")
     return False
 
 def main():
   # Password required to access the database
-  pswd = getpass.getpass("Enter the password for the database 'mrc': ")
+  # pswd = getpass.getpass("Enter the password for the database 'mrc': ")
 
-  print("Connecting to database...")
-  db = DBConnection(pswd)
-  connection, res = db.connect()
+  # print("Connecting to database...")
+  # db = DBConnection(pswd)
+  # connection, res = db.connect()
 
   if connection:
     print(res) # Connection successful
