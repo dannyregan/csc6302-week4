@@ -26,6 +26,10 @@ def addVessel(connection, name, cph):
   res = Vessel_DAL.addVessel(connection, name, cph)
   return res
 
+def addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
+  res = Trip_DAL.addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers)
+  return res
+
 def connectToDB(username, pswd, host_value, port_value):
   db = DBConnection(pswd)
   connection, res = db.connect()

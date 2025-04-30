@@ -77,12 +77,14 @@ class Trip_DAL:
         data = result.fetchall()
         if data:
           res = data[0][0]
-          if res == -3: return "Vessel and passenger not found."
-          if res == -2: return "Passenger not found."
-          if res == -1: return "Vessel not found."
+          if res == -3: return "Vessel and passenger not found. Add them then try again."
+          if res == -2: return "Passenger not found. Add them then try again."
+          if res == -1: return "Vessel not found. Add it then try again."
 
       connection.commit()
       return "Trip added successfully."
+    except:
+      return "Unable to add trip. Check your inputs and try again."
     finally:
       cursor.close()
   
