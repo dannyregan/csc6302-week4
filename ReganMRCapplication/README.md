@@ -1,6 +1,6 @@
-# CSC6302 Week 4 Project
+# CSC6302 Week 5 Project
 
-This is a Python-based terminal app that manages the Merrimack River Cruise (MRC) MySQL database. It provides funtionality for interacting with the database.
+This is a Python-based GUI app that manages the Merrimack River Cruise (MRC) MySQL database. It provides funtionality for interacting with the database.
 
 ## Technologies Used
 
@@ -8,10 +8,12 @@ This is a Python-based terminal app that manages the Merrimack River Cruise (MRC
 - MySQL
 - mysql-connector-python
 - tabulate
+- tkinter
 
 ## Project Structure
 
 - ReganMRCapplication
+    - view.py
     - BLL.py
     - DAL.py
     - README.md
@@ -21,7 +23,7 @@ This is a Python-based terminal app that manages the Merrimack River Cruise (MRC
 On macOS:
 
 ```bash
-pip3 install mysql-connector-python tabulate
+pip3 install mysql-connector-python tabulate tkinter
 ```
 
 ## Running the Application
@@ -29,12 +31,12 @@ pip3 install mysql-connector-python tabulate
  On macOS, start the application by opening the terminal, navigating to the project directory, and running the following command:
 
 ```bash
-python3 BLL.py
+python3 view.py
 ```
 
-The terminal interface will prompt you to enter the root password for the MRC database to establish a connection.
+The interface will prompt you to enter the password for the MRC database to establish a connection. You may need to change the username, host, or port input as well.
 
-You will only need to press ENTER or RETURN to run the program—no other commands are required.
+You can then select options from menu to run the application. Ensure proper formatting of inputs, especially for date and time inputs (yyyy-mm-dd hh:mm:ss).
 
 ## Author
 

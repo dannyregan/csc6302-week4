@@ -1,11 +1,16 @@
 import mysql.connector
 
 class DBConnection:
-  def __init__(self, password):
+  def __init__(self, user, password, host, port):
     self.password = password
+    self.user = user
+    self.host = host
+    self.port = port
     self.config = {
-      'user': 'root',
+      'user': self.user,
       'password': self.password,
+      'host': self.host,
+      'port': self.port,
       'database': 'mrc'
     }
     self.connection = None
@@ -13,9 +18,9 @@ class DBConnection:
   def connect(self):
     try:
       self.connection = mysql.connector.connect(**self.config)
-      return self.connection, 'Connection successful.'
+      return self.connection
     except:
-      return self.connection, "Connection failed."
+      return self.connection
   
   def cursor(self):
     if self.connection:
@@ -70,10 +75,10 @@ class Trip_DAL:
   def addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
     cursor = connection.cursor()
     try:
-        # Get start and end time for the new trip
-        start_time = dateAndTime
+        # Set start and end time
+        startTime = dateAndTime
         cursor.execute("SELECT DATE_ADD(%s, INTERVAL %s HOUR)", (dateAndTime, lengthOfTrip))
-        end_time = cursor.fetchone()[0]
+        endTime = cursor.fetchone()[0]
 
         # Get passenger and vessel IDs
         cursor.execute("SELECT getPassengerID(%s)", (passengerName,))
@@ -82,28 +87,27 @@ class Trip_DAL:
         cursor.execute("SELECT getVesselID(%s)", (vesselName,))
         vessel_id = cursor.fetchone()[0]
 
-        # Check for overlapping trips for the passenger
+        # See if the ends of the trips overlap for the passenger
         cursor.execute("""
             SELECT COUNT(*) FROM Trips
             WHERE passengerID = %s
               AND (%s < DATE_ADD(dateAndTime, INTERVAL lengthOfTrip HOUR))
               AND (dateAndTime < %s)
-        """, (passenger_id, start_time, end_time))
+        """, (passenger_id, startTime, endTime))
         passenger_overlap = cursor.fetchone()[0]
 
-        # Check for overlapping trips for the vessel
+        # See if the ends of the trips overlap for the vessel
         cursor.execute("""
             SELECT COUNT(*) FROM Trips
             WHERE vesselID = %s
               AND (%s < DATE_ADD(dateAndTime, INTERVAL lengthOfTrip HOUR))
               AND (dateAndTime < %s)
-        """, (vessel_id, start_time, end_time))
+        """, (vessel_id, startTime, endTime))
         vessel_overlap = cursor.fetchone()[0]
 
         if passenger_overlap > 0 or vessel_overlap > 0:
             return "Unable to add trip. That passenger or vessel is already booked during this time."
 
-        # Call stored procedure to add the trip
         args = (vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers)
         cursor.callproc("addTrip", args)
 
@@ -121,52 +125,10 @@ class Trip_DAL:
         connection.commit()
         return "Trip added successfully."
 
-    except Exception as e:
-        print(e)
+    except:
         return "Unable to add trip. Check your inputs and try again."
     finally:
         cursor.close()
-
-
-
-  # def addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
-  #   cursor = connection.cursor()
-  #   try:
-  #     # passDB = cursor.execute("""
-  #     #   SELECT COUNT(*)
-  #     #   FROM trips 
-  #     #   WHERE passengerName = %s AND dateandtime = %s
-  #     #   """, (passengerName, dateAndTime))
-  #     # passDB = cursor.fetchone()[0]
-  #     # print(passDB)
-
-  #     # cursor.execute("""
-  #     #   SELECT COUNT(*)
-  #     #   FROM Trips 
-  #     #   WHERE vesselName = %s AND dateandtime = %s
-  #     #   """, (vesselName, dateAndTime))
-  #     # vesselDB = cursor.fetchone()[0]
-
-  #     # if (passDB + vesselDB) == 0:
-  #     args = (vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers)
-  #     cursor.callproc("addTrip", args)
-
-  #     for result in cursor.stored_results():
-  #       data = result.fetchall()
-  #       if data:
-  #         res = data[0][0]
-  #         if res == -3: return "Vessel and passenger not found. Add them then try again."
-  #         if res == -2: return "Passenger not found. Add them then try again."
-  #         if res == -1: return "Vessel not found. Add it then try again."
-
-  #       connection.commit()
-  #       return "Trip added successfully."
-  #     # else:
-  #       # return "Unable to add trip. You're double booking the passenger or vessel."
-  #   except:
-  #     return "Unable to add trip. Check your inputs and try again."
-  #   finally:
-  #     cursor.close()
   
   def allTrips(connection):
     cursor = connection.cursor()

@@ -1,21 +1,22 @@
+# References:
+# https://tkdocs.com/tutorial/
+# https://docs.python.org/3/library/tkinter.html#text-widget
+# https://www.tutorialspoint.com/python/tk_text.htm
+# https://www.youtube.com/watch?v=AK1J8xF4fuk
+# https://www.drupal.org/forum/support/module-development-and-code-questions/2007-03-16/d-and-s-in-sql-queries
+
 from tkinter import *
 
 from BLL import connectToDB, printAllTrips, printTotalRevenueByVessel, printAllPassengers, addPassenger, addVessel, addTrip
 
+# GUI set up
 root = Tk()
 root.title('Merrimack River Cruise')
-root.geometry('350x200')
 
-# Global or shared state to track current output box
-current_output = {"box": None}
-connection = None
+# Track if output box has info in it
+currentOutput = {"box": None}
 
-# FIX COMMIT WHEN TRIPS ADDED OR SOMETHING
-# Add Trip
-# No double booking (in BLL)
-# If user/vessel doesn't exist for new trip, just add user and vessel
-
-# Configure grid so rows/columns expand
+# Rows/columns expand within the GUI
 root.grid_rowconfigure(0, weight=1)
 root.grid_rowconfigure(1, weight=1)
 root.grid_rowconfigure(2, weight=1)
@@ -30,39 +31,12 @@ root.grid_columnconfigure(3, weight=1)
 root.grid_columnconfigure(4, weight=1)
 root.grid_columnconfigure(5, weight=1)
 
-# Labels
-title = Label(root, text='Sign In')
-title.grid(row=0, columnspan=2)
-userLabel = Label(root, text='Username')
-userLabel.grid(row=1, column=0, padx=5)
-pswdLabel = Label(root, text='Password')
-pswdLabel.grid(row=2, column=0, padx=5)
-hostLabel = Label(root, text='Hostname')
-hostLabel.grid(row=3, column=0, padx=5)
-portLabel = Label(root, text='Port')
-portLabel.grid(row=4, column=0, padx=5)
-# Inputs
-user = Entry(root, width=20)
-user.grid(row=1, column=1)
-user.insert(0, 'root')
-pswd = Entry(root, width=20)
-pswd.grid(row=2, column=1)
-pswd.insert(0, 'Legends17!')
-host = Entry(root, width=20)
-host.grid(row=3, column=1)
-host.insert(0, '127.0.0.1')
-port = Entry(root, width=20)
-port.grid(row=4, column=1)
-port.insert(0, '3306')
-
 def showMainMenu(root, connection):
     root.geometry("1200x50")
-
-    # Grid management info found here:
-    # https://tkdocs.com/tutorial/grid.html
+    # Clear the GUI
     for widget in root.grid_slaves():
         widget.grid_forget()
-    
+    # Add buttons
     viewTripsButton = Button(root, text="View All Trips", command=lambda: viewAllTrips(root, connection))
     viewTripsButton.grid(row=0, column=0, padx=10, pady=10)
 
@@ -82,71 +56,60 @@ def showMainMenu(root, connection):
     addTripButton.grid(row=0, column=5, padx=10, pady=10)
 
 def showRes(root, connection, res):
+    root.geometry('700x150')
+    # Clear the GUI
     for widget in root.grid_slaves():
         widget.grid_forget()
-
-    root.geometry('700x150')
     outputBox = displayOutputBox(root, 90, 1)
-    outputBox.delete("1.0", END)
     outputBox.insert(END, res)
     okay = Button(root, text='Okay', command=lambda: showMainMenu(root, connection))
     okay.grid(row=3, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
 def displayOutputBox(root, w, h):
-    if current_output["box"]:
-        current_output["box"].destroy()
+    if currentOutput["box"]:
+        currentOutput["box"].destroy()
+        currentOutput["box"] = None 
     outputBox = Text(root, width=w, height=h)
     outputBox.grid(row=1, column=0, columnspan=6, padx=20, pady=20)
-    current_output["box"] = outputBox 
+    currentOutput["box"] = outputBox 
     return outputBox
 
 def viewAllTrips(root, connection):
     root.geometry('1200x700')
     outputBox = displayOutputBox(root, 195, 45)
-    outputBox.delete("1.0", END)
     outputText = printAllTrips(connection)
     outputBox.insert(END, outputText)
 
 def viewRevenueByVessel(root, connection):
     root.geometry('900x300')
     outputBox = displayOutputBox(root, 45, 10)
-    outputBox.delete("1.0", END)
     outputText = printTotalRevenueByVessel(connection)
     outputBox.insert(END, outputText)
 
 def viewPassengers(root, connection):
     root.geometry('900x300')
     outputBox = displayOutputBox(root, 20, 15)
-    outputBox.delete("1.0", END)
     outputText = printAllPassengers(connection)
     outputBox.insert(END, outputText)
 
 def submitPassenger(root, connection, name, address, phone):
-
     res = addPassenger(connection, name, address, phone)
-
     outputBox = displayOutputBox(root, 35, 1)
     outputBox.delete("1.0", END)
     outputBox.insert(END, res)
-
     showRes(root, connection, res)
 
 def submitVessel(root, connection, name, cph):
     res = addVessel(connection, name, cph)
-
     outputBox = displayOutputBox(root, 35, 1)
     outputBox.delete("1.0", END)
     outputBox.insert(END, res)
-
     showRes(root, connection, res)
 
 def submitTrip(root, connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
     res = addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers)
-
     outputBox = displayOutputBox(root, 45, 1)
-    outputBox.delete("1.0", END)
     outputBox.insert(END, res)
-
     showRes(root, connection, res)
     
 def addNewPassenger(root, connection):
@@ -170,12 +133,11 @@ def addNewPassenger(root, connection):
     phone = Entry(root, width=20)
     phone.grid(row=3, column=1, padx=20)
 
-    submitPassengerButton = Button(root, text = 'Submit', command=lambda: submitPassenger(root, connection, name.get(), address.get(), phone.get()))
+    submitPassengerButton = Button(root, text='Submit', command=lambda: submitPassenger(root, connection, name.get(), address.get(), phone.get()))
     submitPassengerButton.grid(row=4, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
     
 def addNewVessel(root, connection):
     root.geometry('350x250')
-
     for widget in root.grid_slaves():
         widget.grid_forget()
     # Labels
@@ -190,13 +152,12 @@ def addNewVessel(root, connection):
     name.grid(row=1, column=1)
     cph = Entry(root, width=20)
     cph.grid(row=2, column=1)
-
-    submitVesselButton = Button(root, text = 'Submit', command=lambda: submitVessel(root, connection, name.get(), cph.get()))
+    # Submit button
+    submitVesselButton = Button(root, text='Submit', command=lambda: submitVessel(root, connection, name.get(), cph.get()))
     submitVesselButton.grid(row=3, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
 def addNewTrip(root, connection):
     root.geometry('350x300')
-
     for widget in root.grid_slaves():
         widget.grid_forget()
     # Labels
@@ -223,26 +184,58 @@ def addNewTrip(root, connection):
     length.grid(row=4, column=1)
     nPassengers = Entry(root, width=20)
     nPassengers.grid(row=5, column=1)
-
+    # Submit button
     submitTripButton = Button(root, text='Submit', command=lambda: submitTrip(root, connection, vessel.get(), passenger.get(), dt.get(), length.get(), nPassengers.get()))
     submitTripButton.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
-# Submit Button
-def signIn():
+def submitSignIn(user, pswd, host, port):
     global connection
-    # Get the values from the entry widgets
-    username = user.get()
-    password = pswd.get()
-    host_value = host.get()
-    port_value = port.get()
-    
-    # Call connectToDB function and pass the user inputs
-    connection = connectToDB(username, password, host_value, port_value)
+    connection = connectToDB(user, pswd, host, port)
     
     if connection:
         showMainMenu(root, connection)
+    else:
+        root.geometry('500x100')
+        # Clear the GUI
+        for widget in root.grid_slaves():
+            widget.grid_forget()
+        outputBox = displayOutputBox(root, 90, 1)
+        outputBox.insert(END, 'Unable to sign in. Try again.')
 
-submitButton = Button(root, text = 'Sign In', command = signIn)
-submitButton.grid(row=5, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+        okay = Button(root, text='Okay', command=lambda: signIn())
+        okay.grid(row=2, column=0, columnspan=2, padx=10, ipadx=100)
 
+def signIn():
+    root.geometry('350x200')
+    for widget in root.grid_slaves():
+        widget.grid_forget()
+    # Sign in labels
+    title = Label(root, text='Sign In')
+    title.grid(row=0, columnspan=2)
+    userLabel = Label(root, text='Username')
+    userLabel.grid(row=1, column=0, padx=5)
+    pswdLabel = Label(root, text='Password')
+    pswdLabel.grid(row=2, column=0, padx=5)
+    hostLabel = Label(root, text='Hostname')
+    hostLabel.grid(row=3, column=0, padx=5)
+    portLabel = Label(root, text='Port')
+    portLabel.grid(row=4, column=0, padx=5)
+    # Sign in inputs
+    user = Entry(root, width=20)
+    user.grid(row=1, column=1)
+    user.insert(0, 'root')
+    pswd = Entry(root, width=20)
+    pswd.grid(row=2, column=1)
+    pswd.insert(0, '')
+    host = Entry(root, width=20)
+    host.grid(row=3, column=1)
+    host.insert(0, '127.0.0.1')
+    port = Entry(root, width=20)
+    port.grid(row=4, column=1)
+    port.insert(0, '3306')
+
+    submitButton = Button(root, text='Sign In', command=lambda: submitSignIn(user.get(), pswd.get(), host.get(), port.get()))
+    submitButton.grid(row=5, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+signIn()
 root.mainloop()
