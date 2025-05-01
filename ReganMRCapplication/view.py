@@ -56,7 +56,7 @@ port.grid(row=4, column=1)
 port.insert(0, '3306')
 
 def showMainMenu(root, connection):
-    root.geometry("900x50")
+    root.geometry("1200x50")
 
     # Grid management info found here:
     # https://tkdocs.com/tutorial/grid.html
@@ -85,8 +85,8 @@ def showRes(root, connection, res):
     for widget in root.grid_slaves():
         widget.grid_forget()
 
-    root.geometry('500x150')
-    outputBox = displayOutputBox(root, 60, 1)
+    root.geometry('700x150')
+    outputBox = displayOutputBox(root, 90, 1)
     outputBox.delete("1.0", END)
     outputBox.insert(END, res)
     okay = Button(root, text='Okay', command=lambda: showMainMenu(root, connection))
@@ -131,8 +131,8 @@ def submitPassenger(root, connection, name, address, phone):
 
     showRes(root, connection, res)
 
-def submitVessel(root, connection, vessel, passenger, dt, length, nPassengers):
-    res = addVessel(connection, vessel, passenger, dt, length, nPassengers)
+def submitVessel(root, connection, name, cph):
+    res = addVessel(connection, name, cph)
 
     outputBox = displayOutputBox(root, 35, 1)
     outputBox.delete("1.0", END)
@@ -143,7 +143,7 @@ def submitVessel(root, connection, vessel, passenger, dt, length, nPassengers):
 def submitTrip(root, connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers):
     res = addTrip(connection, vesselName, passengerName, dateAndTime, lengthOfTrip, totalPassengers)
 
-    outputBox = displayOutputBox(root, 35, 1)
+    outputBox = displayOutputBox(root, 45, 1)
     outputBox.delete("1.0", END)
     outputBox.insert(END, res)
 
